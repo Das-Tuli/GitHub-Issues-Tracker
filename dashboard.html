@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Issues Tracker</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.6.0/dist/full.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fafafa; }
+        .text-purple-theme { color: #5c1cff; }
+        .bg-purple-theme { background-color: #5c1cff; }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+    <!-- Navbar -->
+    <div class="navbar bg-white border-b border-gray-200 px-4 lg:px-12 py-3 sticky top-0 z-40">
+        <div class="flex-1 gap-3">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path>
+            </svg>
+            <a class="text-xl font-bold text-gray-800">GitHub Issues Tracker</a>
+        </div>
+
+        <div class="flex-none gap-4 hidden sm:flex">
+            <div class="relative w-72">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <input id="searchInput" type="text" placeholder="Search issues..." class="input input-sm h-10 w-full pl-10 border-gray-300 bg-gray-50 focus:bg-white" onkeydown="if(event.key === 'Enter') searchIssue()"/>
+            </div>
+            <button onclick="searchIssue()" class="btn btn-sm h-10 px-6 bg-purple-theme text-white border-none hover:bg-purple-700">+ Search</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-[1400px] mx-auto px-4 lg:px-12 py-10">
+        
+        <!-- Mobile Search (Visible only on small screens) -->
+        <div class="flex sm:hidden gap-2 mb-6">
+            <input id="searchInputMobile" type="text" placeholder="Search issues..." class="input input-sm h-10 w-full border-gray-300" onkeydown="if(event.key === 'Enter') { document.getElementById('searchInput').value = this.value; searchIssue(); }"/>
+            <button onclick="document.getElementById('searchInput').value = document.getElementById('searchInputMobile').value; searchIssue()" class="btn btn-sm h-10 bg-purple-theme text-white border-none shrink-0">Search</button>
+        </div>
+
+        <!-- Tabs Section -->
+        <div class="flex gap-4 mb-8">
+            <button id="tab-all" class="px-8 py-2.5 rounded-lg font-medium transition-colors bg-purple-theme text-white border border-purple-theme" onclick="switchTab('all')">All</button>
+            <button id="tab-open" class="px-8 py-2.5 rounded-lg font-medium transition-colors bg-white border border-gray-200 text-gray-700 hover:bg-gray-50" onclick="switchTab('open')">Open</button>
+            <button id="tab-closed" class="px-8 py-2.5 rounded-lg font-medium transition-colors bg-white border border-gray-200 text-gray-700 hover:bg-gray-50" onclick="switchTab('closed')">Closed</button>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-full bg-purple-50 flex items-center justify-center text-purple-theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900"><span id="issueCount">0</span> Issues</h2>
+                    <p class="text-gray-500 font-medium text-sm mt-0.5">Track and manage your project issues</p>
+                </div>
+            </div>
+            
+            <div class="flex gap-6 font-semibold text-gray-700">
+                <div class="flex items-center gap-2">
+                    <span class="w-3.5 h-3.5 rounded-full bg-green-500"></span> Open
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-3.5 h-3.5 rounded-full bg-purple-500"></span> Closed
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="hidden justify-center items-center py-20">
+            <span class="loading loading-spinner text-purple-theme w-12 h-12"></span>
+        </div>
+        
+        <!-- Error / Empty Message -->
+        <div id="errorMessage" class="hidden flex-col items-center justify-center py-20 text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="text-lg font-semibold text-gray-700">No issues found</h3>
+            <p class="text-sm mt-1">Try adjusting your filters or search term.</p>
+        </div>
+
+        <!-- Issue Grid -->
+        <div id="issuesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Cards injected via JS -->
+        </div>
+
+    </div>
+
+    <!-- Issue Details Modal -->
+    <dialog id="issueModal" class="modal modal-bottom sm:modal-middle backdrop-blur-sm">
+        <div class="modal-box bg-white max-w-2xl px-8 py-8 rounded-2xl relative shadow-2xl">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 hover:bg-gray-100">✕</button>
+            </form>
+            
+            <div id="modalContent" class="mt-2 text-left">
+                <!-- Modal content injected via JS -->
+                 <div class="flex justify-center my-8">
+                     <span class="loading loading-spinner text-purple-theme"></span>
+                 </div>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+
+    <script src="api.js"></script>
+
+</body>
+
+</html>
