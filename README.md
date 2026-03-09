@@ -121,3 +121,16 @@ The **spread operator (`...`)** allows an iterable (such as an array or string) 
 - In arrays: `[...arr1, ...arr2]` merges two arrays.
 - In objects: `{...obj1, ...obj2}` merges two objects.
 - In function calls: `func(...arr)` passes array elements as individual arguments to the function.
+
+### 3️⃣ What is the difference between map(), filter(), and forEach()?
+- **`map()`**: Iterates over an array and returns a **new array** of the same length, where each element is the result of applying a callback function to the original element. Use when you want to transform elements.
+- **`filter()`**: Iterates over an array and returns a **new array** containing only the elements that pass a given condition inside the callback function. Use when you want to extract a subset of data.
+- **`forEach()`**: Iterates over an array and runs a callback function for each element but **does not return anything** (returns `undefined`). Use when you just want to execute a side effect (like logging or updating the DOM) for each item.
+
+### 4️⃣ What is an arrow function?
+An **arrow function** (`() => {}`) is a shorter syntax for writing function expressions in JavaScript. It doesn't have its own binding to `this` (it inherently binds `this` lexically from the surrounding scope closure), and it cannot be used as a constructor.
+Example: `const add = (a, b) => a + b;`
+
+### 5️⃣ What are template literals?
+**Template literals** are enclosed by backticks (`` ` ``) instead of quotes and allow for easier string formatting. They can contain placeholders for embedded JavaScript expressions using the `${expression}` syntax. It makes string interpolation and multi-line strings much cleaner compared to normal strings with `+` concatenation.
+Example: `` const message = `Hello, ${name}!`; ``
